@@ -1,0 +1,50 @@
+name: "Estrutura de diretórios e arquivos" # Nome do workflow que aparece na interface do GitHub Actions
+
+on: # Definir quando o workflow será executado
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env: # Definir variáveis de ambiente
+  NODE_VERSION: '18'
+
+
+jobs: # Definir os jobs que serão executados
+  demonstrando-estrutura:
+    name: "Demonstrar estrutura básica de diretórios e arquivos" # Nome do job que aparece na interface do GitHub Actions
+    runs-on: ubuntu-latest # Máquina virtual onde o job será executado
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Mostrar estrutura .github/workflows
+        run: |
+          echo "================================"
+          echo "Estrutura de diretórios e arquivos .github/workflows"
+          echo "================================"
+          ls -la .github/workflows
+          echo ""
+          echo "Total de workflows: $(ls -la .github/workflows | wc -l)"
+      
+      - name: Elementos obrigatórios do workflow
+        run: |
+          echo "================================"
+          echo "Elementos obrigatórios do workflow"
+          echo "================================"
+          echo "1. name: <nome-do-workflow>"
+          echo "2. on: <eventos-que-disparam-o-workflow>"
+          echo "3. jobs: <jobs-do-workflow>"
+          echo "4. steps: <steps-do-workflow>"
+          echo "5. runs-on: <ambiente-de-execução-do-workflow>"
+          echo ""
+          echo "Total de elementos obrigatórios: 5"
+      
+      - name: Variáveis e contexto
+        run: |
+          echo "================================"
+          echo "Variáveis e contexto"
+          echo "================================"
+          echo "Variáveis de ambiente: ${{ env.NODE_VERSION }}"
+          echo "Contexto: ${{ github.event_name }}"
+          echo "Total de variáveis e contexto: 2"
