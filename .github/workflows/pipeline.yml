@@ -1,34 +1,36 @@
-name: Scheduler Trigger Workflow
+name: Issue Trigger Workflow
+permissions:
+  issues: write
 
 on:
-  schedule:
-    # Executa às 16:55 no horário do Brasil
-    - cron: '55 19 * * *'
-  workflow_dispatch:
-
+  issues:
+    types: [opened, edited, closed, labeled]
+  
 jobs:
-  scheduled-job:
+  issue-job:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-      
-      - name: Informações do schedule
+      - name: Informações do issue
         run: |
           echo "================================================"
-          echo "Workflow disparado por schedule"
-          echo "Data atual: $(date)"
-          echo "Hora UTC: $(date -u +%H:%M)"
-          echo "Timezone: $(date +%Z)"
+          echo "INFORMAÇÕES DO ISSUE"
+          echo "================================================"
+          echo "Ação: ${{ github.event.action }}"
+          echo "Issue: ${{ github.event.issue.number }}"
+          echo "Título: ${{ github.event.issue.title }}"
+          echo "Autor: ${{ github.event.issue.user.login }}"
+          echo "Labels: ${{ github.event.issue.labels }}"
           echo "================================================"
       
-      - name: Relatório diário automatizado
-        run: |
-          echo "================================================"
-          echo "RELATÓRIO DIÁRIO AUTOMATIZADO"
-          echo "================================================"
-          echo "Total de commits: $(git rev-list --all --count)"
-          echo "Contribuidores únicos: $(git log --format='%aN' | sort -u | wc -l)"
-          echo "Último commit: $(git log -1 --pretty=format:'%h - %s')
-          echo "================================================"
+      - name: Resposta automática (nova issue)
+        if: github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Obrigado por criar este issue! Estamos trabalhando para resolver o problema.'
+            });
